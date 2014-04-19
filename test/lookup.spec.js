@@ -4,10 +4,6 @@ var Lab = require('lab');
 var PeerCrypt = require('..');
 var Fix = require('./fixtures');
 
-// Declare internals
-
-var internals = {};
-
 
 // Test shortcuts
 
@@ -34,7 +30,9 @@ describe('Lookup Server', function() {
       done();
 
     });
+
   });
+
   it('handles invalid POST signatures', function(done) {
 
     var server = new PeerCrypt.Server();
