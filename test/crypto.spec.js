@@ -40,4 +40,16 @@ describe('Crypto', function() {
     });
   });
 
+  describe('computeFingerprint', function () {
+
+    it('generates the cryptographical fingerprint from a given key', function (done) {
+      var key = PeerCrypt.crypto.toPublicKey(Fix.privateKey)
+      var fingerprint = PeerCrypt.crypto.computeFingerprint(key);
+
+      expect(fingerprint).to.equal(Fix.fingerprint);
+      done();
+
+    });
+
+  });
 });
