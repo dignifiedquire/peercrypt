@@ -54,7 +54,7 @@ describe('Lookup Server', function() {
 
     });
   });
-    it('handles mismatching POST fingerprints', function(done) {
+  it('handles mismatching POST fingerprints', function(done) {
 
     var server = new PeerCrypt.Server();
 
@@ -68,5 +68,32 @@ describe('Lookup Server', function() {
       done();
 
     });
+  });
+
+  it('saves and returns a valid POST', function(done) {
+
+    var server = new PeerCrypt.Server();
+
+    var url = '/' + PeerCrypt.crypto.computeFingerprint(Fix.publicKey);
+    var payload = PeerCrypt.crypto.signMessage(Fix.privateKey, 'hello world');
+
+    server.inject({
+      url: url,
+      method: 'POST',
+      payload: payload
+    }, function(res) {
+
+      expect(res.statusCode).to.equal(200);
+
+      server.inject(url, function(res) {
+
+        expect(res.statusCode).to.equal(200);
+        expect(res.payload).to.equal(JSON.stringify(payload));
+
+        done();
+      });
+
+    });
+
   });
 });
