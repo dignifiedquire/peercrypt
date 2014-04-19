@@ -54,7 +54,7 @@ describe('Lookup Server', function() {
 
     });
   });
-    it('handles mistmatching POST fingerprints', function(done) {
+    it('handles mismatching POST fingerprints', function(done) {
 
     var server = new PeerCrypt.Server();
 

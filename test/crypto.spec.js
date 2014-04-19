@@ -3,10 +3,7 @@
 var Lab = require('lab');
 var PeerCrypt = require('..');
 var Fix = require('./fixtures');
-
-// Declare internals
-
-var internals = {};
+var Ursa = require('ursa');
 
 
 // Test shortcuts
@@ -29,7 +26,48 @@ describe('Crypto', function() {
       expect(data.key).to.equal(Fix.publicKey);
       expect(data).to.have.a.property('signature');
       done();
+
     });
+
+  });
+  describe('verifyMessage', function() {
+
+    it('fails on a tempered message', function(done) {
+      var data = PeerCrypt.crypto.signMessage(Fix.privateKey, 'hello world');
+      data.message += '!';
+
+      expect(PeerCrypt.crypto.verifyMessage(data.message, data.key, data.signature)).to.equal(false);
+      done();
+
+    });
+
+    it('fails on a tempered signature', function(done) {
+      var data = PeerCrypt.crypto.signMessage(Fix.privateKey, 'hello world');
+      data.signature += '1';
+
+      expect(PeerCrypt.crypto.verifyMessage(data.message, data.key, data.signature)).to.equal(false);
+      done();
+
+    });
+
+    it('fails on a bad public key', function(done) {
+      var data = PeerCrypt.crypto.signMessage(Fix.privateKey, 'hello world');
+      data.key = 'aba' + data.key + 'aba';
+
+      expect(PeerCrypt.crypto.verifyMessage(data.message, data.key, data.signature)).to.equal(false);
+      done();
+
+    });
+
+
+    it('succeeds on signed message', function(done) {
+      var data = PeerCrypt.crypto.signMessage(Fix.privateKey, 'hello world');
+
+      expect(PeerCrypt.crypto.verifyMessage(data.message, data.key, data.signature)).to.equal(true);
+      done();
+
+    });
+
   });
 
   describe('toPublicKey', function() {
@@ -43,7 +81,7 @@ describe('Crypto', function() {
   describe('computeFingerprint', function () {
 
     it('generates the cryptographical fingerprint from a given key', function (done) {
-      var key = PeerCrypt.crypto.toPublicKey(Fix.privateKey)
+      var key = Ursa.coercePublicKey(Fix.publicKey);
       var fingerprint = PeerCrypt.crypto.computeFingerprint(key);
 
       expect(fingerprint).to.equal(Fix.fingerprint);
